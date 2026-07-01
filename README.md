@@ -4,17 +4,17 @@
 
 # Teslo Api
 
-1. Levantar la base de datos
+1. Clonar el proyecto
+2. `$ pnpm install`
+3. Clonar el `.env.template` y renombrarlo a `.env`
+4. Cambiar las variables de entorno
+5. Levantar la base de datos
 
 ```sh
 docker-compose up -d
 ```
 
-## Project setup
-
-```bash
-$ pnpm install
-```
+6. Levantar el `pnpm run start:dev`
 
 ## Compile and run the project
 
