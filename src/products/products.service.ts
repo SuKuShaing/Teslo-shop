@@ -7,8 +7,9 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class ProductsService {
@@ -30,20 +31,58 @@ export class ProductsService {
 		}
 	}
 
-	findAll() {
-		return `This action returns all products`;
+	// To Do: Paginar
+	async findAll() {
+		return await this.productRepository.find();
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} product`;
+	async findOne(terminoDeBusqueda: string) {
+		let product: Product[];
+
+		// saber sí terminoDeBusqueda es un uuid
+		if (isUUID(terminoDeBusqueda)) {
+			product = await this.productRepository.findBy({
+				id: terminoDeBusqueda,
+			});
+		} else {
+			// sí no es un uuid buscamos por slug
+			product = await this.productRepository.findBy({
+				slug: terminoDeBusqueda,
+			});
+		}
+
+		if (product.length === 0)
+			throw new BadRequestException(
+				`No se encontró un producto con el id o slug ${terminoDeBusqueda}`,
+			);
+
+		return product;
 	}
 
 	update(id: number, updateProductDto: UpdateProductDto) {
 		return `This action updates a #${id} product`;
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} product`;
+	async remove(terminoDeBusqueda: string) {
+		let result: DeleteResult;
+		// saber sí terminoDeBusqueda es un uuid
+		if (isUUID(terminoDeBusqueda)) {
+			result = await this.productRepository.delete({
+				id: terminoDeBusqueda,
+			});
+		} else {
+			// sí no es un uuid buscamos por slug
+			result = await this.productRepository.delete({
+				slug: terminoDeBusqueda,
+			});
+		}
+
+		if (result.affected === 0)
+			throw new BadRequestException(
+				`No se encontró un registro con el id ${terminoDeBusqueda}`,
+			);
+
+		return result;
 	}
 
 	private handleDBExceptions(error: any) {
