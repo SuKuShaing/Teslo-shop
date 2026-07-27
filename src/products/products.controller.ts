@@ -7,6 +7,7 @@ import {
 	Param,
 	Delete,
 	Query,
+	ParseUUIDPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -41,7 +42,9 @@ export class ProductsController {
 	}
 
 	@Delete(':terminoDeBusqueda')
-	remove(@Param('terminoDeBusqueda') terminoDeBusqueda: string) {
+	remove(
+		@Param('terminoDeBusqueda', ParseUUIDPipe) terminoDeBusqueda: string,
+	) {
 		return this.productsService.remove(terminoDeBusqueda);
 	}
 }
