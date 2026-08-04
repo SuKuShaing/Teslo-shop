@@ -11,6 +11,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { isUUID } from 'class-validator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { title } from 'process';
 
 @Injectable()
 export class ProductsService {
@@ -43,21 +44,32 @@ export class ProductsService {
 	}
 
 	async findOne(terminoDeBusqueda: string) {
-		let product: Product[];
+		let product: Product | null;
 
 		// saber sí terminoDeBusqueda es un uuid
 		if (isUUID(terminoDeBusqueda)) {
-			product = await this.productRepository.findBy({
+			product = await this.productRepository.findOneBy({
 				id: terminoDeBusqueda,
 			});
 		} else {
 			// sí no es un uuid buscamos por slug
-			product = await this.productRepository.findBy({
-				slug: terminoDeBusqueda,
-			});
+			// product = await this.productRepository.findOneBy({
+			// 	slug: terminoDeBusqueda,
+			// });
+
+			// Esto es un Query Builder
+			const queryBuilder = this.productRepository.createQueryBuilder();
+			product = await queryBuilder
+				.where('UPPER(title) =:title or slug =:slug', {
+					title: terminoDeBusqueda.toUpperCase(),
+					slug: terminoDeBusqueda.toLowerCase(),
+				})
+				.getOne();
+
+			// `select * from Products where slug = 'XX' or title='XX'`;
 		}
 
-		if (product.length === 0)
+		if (!product)
 			throw new BadRequestException(
 				`No se encontró un producto con el id o slug ${terminoDeBusqueda}`,
 			);
