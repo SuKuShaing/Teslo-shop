@@ -47,11 +47,19 @@ export class ProductsService {
 	async findAll(paginationDto: PaginationDto) {
 		const { limit = 10, offset = 0 } = paginationDto;
 
-		return await this.productRepository.find({
+		const products = await this.productRepository.find({
 			take: limit,
 			skip: offset,
-			//ToDo: relaciones
+			relations: {
+				images: true,
+			},
 		});
+
+		return products.map((product) => ({
+			...product,
+			// esto aplana las imágenes, y entrega solo la propiedad que queremos
+			images: product.images?.map((img) => img.url),
+		}));
 	}
 
 	async findOne(terminoDeBusqueda: string) {
@@ -69,12 +77,14 @@ export class ProductsService {
 			// });
 
 			// Esto es un Query Builder
-			const queryBuilder = this.productRepository.createQueryBuilder();
+			const queryBuilder =
+				this.productRepository.createQueryBuilder('prod');
 			product = await queryBuilder
 				.where('UPPER(title) =:title or slug =:slug', {
 					title: terminoDeBusqueda.toUpperCase(),
 					slug: terminoDeBusqueda.toLowerCase(),
 				})
+				.leftJoinAndSelect('prod.images', 'prodImages') // Se trae la relación, en este caso, con las imágenes
 				.getOne();
 
 			// `select * from Products where slug = 'XX' or title='XX'`;
@@ -86,6 +96,15 @@ export class ProductsService {
 			);
 
 		return product;
+	}
+
+	// Creamos otra función que toma a findOne y la aplana, por qué, porque findOne se ocupa en otras partes, entonces no convenía alterar su salida
+	async findOnePlain(term: string) {
+		const { images = [], ...rest } = await this.findOne(term);
+		return {
+			...rest,
+			images: images.map((image) => image.url),
+		};
 	}
 
 	async update(id: string, updateProductDto: UpdateProductDto) {

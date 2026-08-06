@@ -56,7 +56,7 @@ export class Product {
 	@OneToMany(
 		() => ProductImage, // Esto es la clase ProductImage de la otra tabla o entidad
 		(productImage) => productImage.product, // Este es el objeto (con minúscula) productImage.nombreDeLaColumna
-		{ cascade: true },
+		{ cascade: true, eager: true }, // eager, en las búsquedas, también se trae las relaciones
 	)
 	images?: ProductImage[];
 
