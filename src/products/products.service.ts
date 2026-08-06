@@ -8,7 +8,7 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { title } from 'process';
@@ -24,6 +24,8 @@ export class ProductsService {
 
 		@InjectRepository(ProductImage)
 		private readonly productImageRepository: Repository<ProductImage>,
+
+		private readonly dataSource: DataSource,
 	) {}
 
 	async create(createProductDto: CreateProductDto) {
@@ -108,15 +110,19 @@ export class ProductsService {
 	}
 
 	async update(id: string, updateProductDto: UpdateProductDto) {
+		const { images, ...toUpdate } = updateProductDto;
+
 		// Preload no actualiza, simplemente prepara para la actualización
 		const product = await this.productRepository.preload({
-			id: id,
-			...updateProductDto,
-			images: [],
+			id,
+			...toUpdate,
 		});
 
 		if (!product)
 			throw new NotFoundException(`Product with id: ${id} not found`);
+
+		// Create Query Runner (son funciones que queremos que se ejecuten en una transacción en la base de datos)
+		const queryRunner = this.dataSource.createQueryRunner();
 
 		try {
 			// Save guarda el producto precargado
