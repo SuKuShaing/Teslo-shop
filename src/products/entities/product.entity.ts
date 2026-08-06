@@ -58,7 +58,7 @@ export class Product {
 		(productImage) => productImage.product, // Este es el objeto (con minúscula) productImage.nombreDeLaColumna
 		{ cascade: true },
 	)
-	images?: ProductImage;
+	images?: ProductImage[];
 
 	@BeforeInsert()
 	checkSlugInsert() {
