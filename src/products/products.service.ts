@@ -123,13 +123,39 @@ export class ProductsService {
 
 		// Create Query Runner (son funciones que queremos que se ejecuten en una transacción en la base de datos)
 		const queryRunner = this.dataSource.createQueryRunner();
+		await queryRunner.connect();
+		await queryRunner.startTransaction();
 
 		try {
-			// Save guarda el producto precargado
-			await this.productRepository.save(product);
+			if (images) {
+				// sí vienen imágenes las borro todas
+				await queryRunner.manager.delete(ProductImage, {
+					//elegimos la tabla y luego el criterio de eliminación
+					product: { id }, // este es el criterio de eliminación, buscamos las imágenes con el criterio de eliminación product = id
+				});
 
-			return product;
+				// aquí añadimos las nuevas imágenes, dado que borré las ya estaban
+				product.images = images.map((image) =>
+					this.productImageRepository.create({ url: image }),
+				);
+			}
+			// else {
+			// ???
+			// product.images ???
+			// }
+
+			await queryRunner.manager.save(product); //prepara y ejecuta el guardado de la entidad dentro de la misma conexión/transacción abierta por el query runner. Esto queda en memoria, aún no se confirma
+			await queryRunner.commitTransaction(); // Confirma definitivamente todos los cambios acumulados en esa transacción, graba en disco lo que estaba en memoria
+			await queryRunner.release(); // release libera la conexión a la base de datos
+
+			// Save guarda el producto precargado
+			// await this.productRepository.save(product);
+
+			return this.findOnePlain(id);
 		} catch (error) {
+			await queryRunner.rollbackTransaction(); // Sí algún paso falla, se aplica rollback y no se graba nada en disco, todo queda como antes
+			await queryRunner.release();
+
 			this.handleDBExceptions(error);
 		}
 	}
