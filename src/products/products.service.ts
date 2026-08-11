@@ -191,4 +191,15 @@ export class ProductsService {
 
 		throw new InternalServerErrorException('Ayuda!!!'); // Esto lo ve el usuario
 	}
+
+	async deleteAllProducts() {
+		const query = this.productImageRepository.createQueryBuilder('product');
+
+		try {
+			// borra todos ({ // dado que aquí no hay ninguna condición }) los productos de la tabla products
+			return await query.delete().where({}).execute();
+		} catch (error) {
+			this.handleDBExceptions(error);
+		}
+	}
 }
