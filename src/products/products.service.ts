@@ -193,7 +193,7 @@ export class ProductsService {
 	}
 
 	async deleteAllProducts() {
-		const query = this.productImageRepository.createQueryBuilder('product');
+		const query = this.productRepository.createQueryBuilder('product');
 
 		try {
 			// borra todos ({ // dado que aquí no hay ninguna condición }) los productos de la tabla products
