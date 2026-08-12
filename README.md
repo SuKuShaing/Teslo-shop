@@ -14,7 +14,9 @@
 docker-compose up -d
 ```
 
-6. Levantar el `pnpm run start:dev`
+6. Ejecutar el SEED, GET a `http://localhost:3000/api/seed`
+
+7. Levantar el `pnpm run start:dev`
 
 ## Compile and run the project
 
