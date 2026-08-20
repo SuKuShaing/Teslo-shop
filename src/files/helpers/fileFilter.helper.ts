@@ -12,7 +12,7 @@ export const fileFilter = (
 	file: Express.Multer.File,
 	callback: Function,
 ) => {
-	console.log({ file });
+	// console.log({ file });
 	// {
 	//     file: {
 	//         fieldname: 'file',

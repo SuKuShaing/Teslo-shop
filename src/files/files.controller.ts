@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { fileFilter } from './helpers/fileFilter.helper';
 import { diskStorage } from 'multer';
+import { fileFilter, fileNamer } from './helpers';
 
 @Controller('files')
 export class FilesController {
@@ -27,7 +27,10 @@ export class FilesController {
 			fileFilter: fileFilter,
 			// fileFilter es el filtro que colocamos, en este caso validamos que sea una imagen
 			// limits: { fileSize: 10000000,  }, // valor en bytes, aquí hay 10 MB
-			storage: diskStorage({ destination: './static/uploads' }),
+			storage: diskStorage({
+				destination: './static/products',
+				filename: fileNamer,
+			}),
 		}),
 	)
 	uploadProductImage(@UploadedFile() file: Express.Multer.File) {
@@ -38,7 +41,8 @@ export class FilesController {
 			);
 		}
 
-		console.log({ fileInController: file });
+		// console.log({ fileInController: file });
+		console.log(file);
 
 		return {
 			fieldname: file.fieldname,
