@@ -1,5 +1,12 @@
 import 'multer';
 
+/**
+ * Este es un archivo que filtra, y verifica que el archivo subido tenga el formato indicado
+ * @param req
+ * @param file
+ * @param callback
+ * @returns
+ */
 export const fileFilter = (
 	req: Express.Request,
 	file: Express.Multer.File,

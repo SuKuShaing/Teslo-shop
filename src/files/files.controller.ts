@@ -14,6 +14,7 @@ import {
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileFilter } from './helpers/fileFilter.helper';
+import { diskStorage } from 'multer';
 
 @Controller('files')
 export class FilesController {
@@ -25,6 +26,8 @@ export class FilesController {
 			// 'file' es el nombre de la key en el form-data
 			fileFilter: fileFilter,
 			// fileFilter es el filtro que colocamos, en este caso validamos que sea una imagen
+			// limits: { fileSize: 10000000,  }, // valor en bytes, aquí hay 10 MB
+			storage: diskStorage({ destination: './static/uploads' }),
 		}),
 	)
 	uploadProductImage(@UploadedFile() file: Express.Multer.File) {
