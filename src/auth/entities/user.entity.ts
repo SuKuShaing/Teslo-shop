@@ -8,8 +8,10 @@ export class User {
 	@Column('text', { unique: true })
 	email!: string;
 
-	@Column('text')
-	password?: string;
+	@Column('text', {
+		select: false, // Cuando hacemos un find del usuario, no retorna el dato de esta columna
+	})
+	password!: string;
 
 	@Column('text')
 	fullName!: string;
