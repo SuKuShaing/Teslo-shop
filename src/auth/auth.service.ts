@@ -36,7 +36,7 @@ export class AuthService {
 			await this.userRepository.save(user);
 			// delete user.password;
 
-			return { ...user, token: this.getJwtToken({ email: user.email }) };
+			return { ...user, token: this.getJwtToken({ id: user.id }) };
 		} catch (error) {
 			this.handleDBErrors(error);
 		}
@@ -47,8 +47,8 @@ export class AuthService {
 
 		const user = await this.userRepository.findOne({
 			where: { email: email.toLowerCase() },
-			select: { email: true, password: true },
-			// en la línea donde está el email, devuelve de esa línea el email y contraseña
+			select: { email: true, password: true, id: true },
+			// en la línea donde está el email, devuelve de esa línea el email, contraseña e id
 		});
 
 		if (!user)
@@ -61,7 +61,7 @@ export class AuthService {
 				'Credentials are not valid (password)',
 			);
 
-		return { ...user, token: this.getJwtToken({ email: user.email }) };
+		return { ...user, token: this.getJwtToken({ id: user.id }) };
 	}
 
 	private getJwtToken(payload: JwtPayload) {
