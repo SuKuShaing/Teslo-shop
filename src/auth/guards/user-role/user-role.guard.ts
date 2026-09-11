@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
+import { META_ROLES } from 'src/auth/decorators/role-protected/role-protected.decorator';
 import { User } from 'src/auth/entities/user.entity';
 
 // este archivo se genera con `nest g guard auth/guards/userRole --no-spec`
@@ -19,7 +20,7 @@ export class UserRoleGuard implements CanActivate {
 		context: ExecutionContext,
 	): boolean | Promise<boolean> | Observable<boolean> {
 		const validRoles: string[] = this.reflector.get(
-			'roles',
+			META_ROLES,
 			context.getHandler(),
 		); // con reflector obtengo la metadata de los roles que asociamos, { roles: ['admin', 'super-user'] }
 
