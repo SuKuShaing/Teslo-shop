@@ -55,7 +55,7 @@ export class AuthController {
 
 	//Ruta que va necesitar cierto rol para ingresar
 	@Get('private-2')
-	@SetMetadata('roles', ['admin', 'super-user']) // asocia información adicional a una clase o método mediante metadata de reflexión. No la inyecta en los parámetros ni la obtiene automáticamente de la petición, gurada esto { roles: ['admin', 'super-user'] }
+	@SetMetadata('roles', ['admin', 'super-user']) // asocia información adicional a una clase o método mediante metadata de reflexión. No la inyecta en los parámetros ni la obtiene automáticamente de la petición, guarda esto { roles: ['admin', 'super-user'] }
 	@UseGuards(AuthGuard(), UserRoleGuard) // sin esto no tenemos usuario en @GetUser
 	privateRoute2(@GetUser() user: User) {
 		return {
