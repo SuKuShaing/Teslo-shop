@@ -15,7 +15,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './entities/user.entity';
-import { GetUser, RawHeaders } from './decorators';
+import { Auth, GetUser, RawHeaders } from './decorators';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
 import { RoleProtected } from './decorators/role-protected/role-protected.decorator';
 import { ValidRoles } from './interfaces';
@@ -54,13 +54,22 @@ export class AuthController {
 		};
 	}
 
-	// @SetMetadata('roles', ['admin', 'super-user']) // asocia información adicional a una clase o método mediante metadata de reflexión. No la inyecta en los parámetros ni la obtiene automáticamente de la petición, guarda esto { roles: ['admin', 'super-user'] }
-
 	//Ruta que va necesitar cierto rol para ingresar
 	@Get('private-2')
+	// @SetMetadata('roles', ['admin', 'super-user']) // asocia información adicional a una clase o método mediante metadata de reflexión. No la inyecta en los parámetros ni la obtiene automáticamente de la petición, guarda esto { roles: ['admin', 'super-user'] }
 	@RoleProtected(ValidRoles.superUser, ValidRoles.admin) // indica que roles están autorizados // Reemplaza a @SetMetadata('roles', ['admin', 'super-user']) ahorra el tener que escribir roles
 	@UseGuards(AuthGuard(), UserRoleGuard) // sin esto no tenemos usuario en @GetUser // (AuthGuard(), UserRoleGuard) (Autenticación, Autorización)
 	privateRoute2(@GetUser() user: User) {
+		return {
+			ok: true,
+			user,
+		};
+	}
+
+	//Ruta que va necesitar cierto rol para ingresar
+	@Get('private-3')
+	@Auth(ValidRoles.admin, ValidRoles.superUser) // Al hacer este custom decorator, simplemente colocamos el tipo de usuario que tiene permiso y listo, el resto se hace dentro del decorador
+	privateRoute3(@GetUser() user: User) {
 		return {
 			ok: true,
 			user,
