@@ -3,10 +3,12 @@ import {
 	BeforeUpdate,
 	Column,
 	Entity,
+	ManyToOne,
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductImage } from './product-image.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -59,6 +61,14 @@ export class Product {
 		{ cascade: true, eager: true }, // eager, en las búsquedas, también se trae las relaciones
 	)
 	images?: ProductImage[];
+
+	@ManyToOne(
+		() => User, // Entidad con las que se va a relacionar
+		(user) => user.products, // el como el usuario se relaciona con la tabla
+		{ eager: true }, // le decimos que cargue automáticamente la relación
+		// @ManyToOne crea un columna porque debe almacenar la clave foránea
+	)
+	user!: User;
 
 	@BeforeInsert()
 	checkSlugInsert() {

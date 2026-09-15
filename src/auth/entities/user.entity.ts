@@ -1,8 +1,10 @@
+import { Product } from 'src/products/entities';
 import {
 	BeforeInsert,
 	BeforeUpdate,
 	Column,
 	Entity,
+	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -27,6 +29,12 @@ export class User {
 
 	@Column('text', { array: true, default: ['user'] })
 	roles!: string[];
+
+	@OneToMany(
+		() => Product, // Entidad con las que se va a relacionar
+		(product) => product.user, // el como el producto se relaciona con la tabla
+	)
+	products!: Product[];
 
 	@BeforeInsert()
 	checkFieldsBeforeInsert() {
