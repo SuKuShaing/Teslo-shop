@@ -13,6 +13,7 @@ import { isUUID } from 'class-validator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { title } from 'process';
 import { ProductImage, Product } from './entities';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -28,12 +29,13 @@ export class ProductsService {
 		private readonly dataSource: DataSource,
 	) {}
 
-	async create(createProductDto: CreateProductDto) {
+	async create(createProductDto: CreateProductDto, user: User) {
 		try {
 			const { images = [], ...productDetails } = createProductDto;
 
 			const product = this.productRepository.create({
 				...productDetails,
+				user,
 				images: images.map((image) =>
 					this.productImageRepository.create({ url: image }),
 				),
@@ -109,7 +111,7 @@ export class ProductsService {
 		};
 	}
 
-	async update(id: string, updateProductDto: UpdateProductDto) {
+	async update(id: string, updateProductDto: UpdateProductDto, user: User) {
 		const { images, ...toUpdate } = updateProductDto;
 
 		// Preload no actualiza, simplemente prepara para la actualización
@@ -122,6 +124,7 @@ export class ProductsService {
 			throw new NotFoundException(`Product with id: ${id} not found`);
 
 		// Create Query Runner (son funciones que queremos que se ejecuten en una transacción en la base de datos)
+		product.user = user; // sí el usuario que hace la actualización es distinto al que creó el producto, se actualiza el usuario que lo actualizó
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
