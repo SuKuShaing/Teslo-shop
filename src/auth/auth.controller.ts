@@ -34,6 +34,14 @@ export class AuthController {
 		return this.authService.login(loginUserDto);
 	}
 
+	@Get('check-status')
+	@Auth() // con esto cualquier usuario loggeado puede entrar aquí
+	checkAuthStatus(
+		@GetUser() user: User // Obtenemos el usuario
+	) {
+		return this.authService.checkAuthStatus( user );
+	}
+
 	//Ruta que solo se necesita estar loggeado, no necesita tener algún rol para ingresar
 	@Get('private')
 	@UseGuards(AuthGuard()) // sin esto no tenemos usuario en @GetUser, dado que pasa por aquí primero

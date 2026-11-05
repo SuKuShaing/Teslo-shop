@@ -64,6 +64,10 @@ export class AuthService {
 		return { ...user, token: this.getJwtToken({ id: user.id }) };
 	}
 
+	async checkAuthStatus (user: User) { // Obtenemos el usuario y devolvemos todos los datos y generamos un nuevo JWT para él 
+		return { ...user, token: this.getJwtToken({ id: user.id }) };
+	} 
+
 	private getJwtToken(payload: JwtPayload) {
 		const token = this.jwtService.sign(payload);
 		return token;
