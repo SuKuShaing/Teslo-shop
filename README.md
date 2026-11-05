@@ -14,9 +14,13 @@
 docker-compose up -d
 ```
 
-6. Levantar el `pnpm run start:dev`
+6. ir a seed.controller.ts y comentar toda la línea de `@Auth(ValidRoles.admin, ValidRoles.superUser)`
 
-7. Ejecutar el SEED, GET a `http://localhost:3000/api/seed`
+7. Levantar el servidor `pnpm run start:dev`
+
+8. Ejecutar el SEED, GET a `http://localhost:3000/api/seed`
+
+9. ir a seed.controller.ts y descomentar (o activar nuevamente) toda la línea de `@Auth(ValidRoles.admin, ValidRoles.superUser)`
 
 ## Compile and run the project
 

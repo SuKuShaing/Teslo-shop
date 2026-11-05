@@ -44,7 +44,7 @@ export class SeedService {
 		seedUsers.forEach(({password, ...user}) => {
 			users.push(this.userRepository.create({
 				...user,
-				password: bcrypt.hashSync(password, 10),
+				password: bcrypt.hashSync(password, 10), // Toma la contraseña y la guarda encriptada en la base de datos
 			})); // Crea la entidad pero no la guarda en la base de datos
 		});
 
