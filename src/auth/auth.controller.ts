@@ -11,15 +11,18 @@ import {
 	Headers,
 	SetMetadata,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
+
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
-import { AuthGuard } from '@nestjs/passport';
 import { User } from './entities/user.entity';
 import { Auth, GetUser, RawHeaders } from './decorators';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
 import { RoleProtected } from './decorators/role-protected/role-protected.decorator';
 import { ValidRoles } from './interfaces';
 
+@ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
