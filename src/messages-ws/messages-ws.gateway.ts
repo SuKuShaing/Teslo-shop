@@ -19,6 +19,9 @@ export class MessagesWsGateway
 
 	// Cuando un cliente se conecta
 	handleConnection(client: Socket) {
+		const token = client.handshake.headers.authentication as string;
+		console.log('Client connected:', token);
+
 		// console.log('Client connected:', client.id);
 		this.messagesWsService.registerClient(client);
 
