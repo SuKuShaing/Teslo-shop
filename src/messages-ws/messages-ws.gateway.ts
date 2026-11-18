@@ -23,20 +23,17 @@ export class MessagesWsGateway
 	) {}
 
 	// Cuando un cliente se conecta
-	handleConnection(client: Socket) {
+	async handleConnection(client: Socket) {
 		const token = client.handshake.headers.authentication as string;
 		let payload: JwtPayload;
 		try {
 			payload = this.jwtService.verify(token);
+			await this.messagesWsService.registerClient(client, payload.id);
+
 		} catch (error) {
 			client.disconnect();
 			return; 
 		}
-
-		console.log({payload});
-
-		// console.log('Client connected:', client.id);
-		this.messagesWsService.registerClient(client);
 
 		// Emitir a todos los clientes conectados y que estén escuchando 'clients-updated', el id de los clientes conectados
 		this.wss.emit(
@@ -77,7 +74,7 @@ export class MessagesWsGateway
 
 		// Emitir a todos los clientes, incluyendo al que envió el mensaje
 		this.wss.emit('message-from-server', {
-			fullName: 'Soy yo',
+			fullName: this.messagesWsService.getUserFullName(client.id),
 			message: `Tu mensaje fue: ${payload.message}`,
 		}) // Emitir a todos los clientes conectados el número de clientes conectados
 	}
